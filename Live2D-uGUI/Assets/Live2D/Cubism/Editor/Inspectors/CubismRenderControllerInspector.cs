@@ -52,8 +52,6 @@ namespace Live2D.Cubism.Editor.Inspectors
 
             if (ShowSorting)
             {
-                controller.SortingLayer = EditorGUILayout.TextField("Layer", controller.SortingLayer);
-                controller.SortingOrder = EditorGUILayout.IntField("Order In Layer", controller.SortingOrder);
                 controller.SortingMode = (CubismSortingMode)EditorGUILayout.EnumPopup("Mode", (Enum)controller.SortingMode);
             }
 
@@ -65,11 +63,6 @@ namespace Live2D.Cubism.Editor.Inspectors
                 controller.CameraToFace = EditorGUILayout.ObjectField("Camera To Face", controller.CameraToFace, typeof(Camera), true) as Camera;
                 controller.OpacityHandler = EditorGUILayout.ObjectField("Opacity Handler", controller.OpacityHandler, typeof(object), true);
                 controller.DrawOrderHandler = EditorGUILayout.ObjectField("Draw Order Handler", controller.DrawOrderHandler, typeof(object), true);
-
-                if (controller.SortingMode.SortByDepth())
-                {
-                    controller.DepthOffset = EditorGUILayout.FloatField("Depth Offset", controller.DepthOffset);
-                }
             }
 
 
@@ -82,8 +75,6 @@ namespace Live2D.Cubism.Editor.Inspectors
                 foreach (var renderer in controller.Renderers)
                 {
                     EditorUtility.SetDirty(renderer);
-                    // HACK Get mesh renderer directly.
-                    EditorUtility.SetDirty(renderer.GetComponent<MeshRenderer>());
                 }
             }
         }

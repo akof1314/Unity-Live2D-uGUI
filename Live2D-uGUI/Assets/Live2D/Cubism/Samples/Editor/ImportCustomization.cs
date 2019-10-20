@@ -50,7 +50,7 @@ namespace Live2D.Cubism.Samples.Editor
             // Lets pretend we want to change the vertex colors of all drawables to green...
             foreach (var renderer in model.Drawables.Select(d => d.GetComponent<CubismRenderer>()))
             { 
-              renderer.Color = Color.green;
+              renderer.color = Color.green;
             }
         }
 

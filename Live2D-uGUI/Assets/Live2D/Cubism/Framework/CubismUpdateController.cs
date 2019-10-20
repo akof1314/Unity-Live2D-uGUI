@@ -14,7 +14,6 @@ using Live2D.Cubism.Framework.Pose;
 using Live2D.Cubism.Framework.HarmonicMotion;
 using Live2D.Cubism.Framework.LookAt;
 using Live2D.Cubism.Rendering;
-using Live2D.Cubism.Rendering.Masking;
 using System;
 using UnityEngine;
 
@@ -67,10 +66,6 @@ namespace Live2D.Cubism.Framework
                 if (component.GetType() == typeof(CubismRenderController))
                 {
                     renderController = component;
-                }
-                else if (component.GetType() == typeof(CubismMaskController))
-                {
-                    maskController = component;
                 }
 #if UNITY_EDITOR
                 else if (!Application.isPlaying)

@@ -26,25 +26,7 @@ namespace Live2D.Cubism.Framework.Json
         /// <returns>Mapped texture.</returns>
         public static Material MaterialPicker(CubismModel3Json sender, CubismDrawable drawable)
         {
-            if (drawable.BlendAdditive)
-            {
-                return (drawable.IsMasked)
-                    ? CubismBuiltinMaterials.UnlitAdditiveMasked
-                    : CubismBuiltinMaterials.UnlitAdditive;
-            }
-
-
-            if (drawable.MultiplyBlend)
-            {
-                return (drawable.IsMasked)
-                    ? CubismBuiltinMaterials.UnlitMultiplyMasked
-                    : CubismBuiltinMaterials.UnlitMultiply;
-            }
-
-
-            return (drawable.IsMasked)
-                ? CubismBuiltinMaterials.UnlitMasked
-                : CubismBuiltinMaterials.Unlit;
+            return null;
         }
 
 

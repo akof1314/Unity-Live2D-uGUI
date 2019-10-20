@@ -8,14 +8,9 @@
 
 using Live2D.Cubism.Editor.Deleters;
 using Live2D.Cubism.Editor.Importers;
-using Live2D.Cubism.Rendering;
-using Live2D.Cubism.Rendering.Masking;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 
 namespace Live2D.Cubism.Editor
@@ -50,10 +45,6 @@ namespace Live2D.Cubism.Editor
             string[] movedAssetPaths,
             string[] movedFromAssetPaths)
         {
-            // Make sure builtin resources are available.
-            GenerateBuiltinResources();
-
-
             // Handle any imported Cubism assets.
             foreach (var assetPath in importedAssetPaths)
             {
@@ -74,7 +65,7 @@ namespace Live2D.Cubism.Editor
             foreach (var assetPath in deletedAssetPaths)
             {
                 var deleter = CubismDeleter.GetDeleterAsPath(assetPath);
-                
+
                 if (deleter == null)
                 {
                     continue;
@@ -106,7 +97,7 @@ namespace Live2D.Cubism.Editor
                 var document = XDocument.Load(csproj);
                 var project = document.Root;
 
-                
+
                 // Allow unsafe code.
                 for (var propertyGroup = project.FirstNode as XElement; propertyGroup != null; propertyGroup = propertyGroup.NextNode as XElement)
                 {
@@ -143,182 +134,6 @@ namespace Live2D.Cubism.Editor
 
                 // Store changes.
                 document.Save(csproj);
-            }
-        }
-
-        #endregion
-
-        #region Resources Generation
-
-        /// <summary>
-        /// Sets Cubism-style normal blending for a material.
-        /// </summary>
-        /// <param name="material">Material to set up.</param>
-        private static void EnableNormalBlending(Material material)
-        {
-            material.SetInt("_SrcColor", (int)BlendMode.One);
-            material.SetInt("_DstColor", (int)BlendMode.OneMinusSrcAlpha);
-            material.SetInt("_SrcAlpha", (int)BlendMode.One);
-            material.SetInt("_DstAlpha", (int)BlendMode.OneMinusSrcAlpha);
-        }
-
-        /// <summary>
-        /// Sets Cubism-style additive blending for a material.
-        /// </summary>
-        /// <param name="material">Material to set up.</param>
-        private static void EnableAdditiveBlending(Material material)
-        {
-            material.SetInt("_SrcColor", (int)BlendMode.One);
-            material.SetInt("_DstColor", (int)BlendMode.One);
-            material.SetInt("_SrcAlpha", (int)BlendMode.Zero);
-            material.SetInt("_DstAlpha", (int)BlendMode.One);
-        }
-
-        /// <summary>
-        /// Sets Cubism-style multiplicative blending for a material.
-        /// </summary>
-        /// <param name="material">Material to set up.</param>
-        private static void EnableMultiplicativeBlending(Material material)
-        {
-            material.SetInt("_SrcColor", (int)BlendMode.DstColor);
-            material.SetInt("_DstColor", (int)BlendMode.OneMinusSrcAlpha);
-            material.SetInt("_SrcAlpha", (int)BlendMode.Zero);
-            material.SetInt("_DstAlpha", (int)BlendMode.One);
-        }
-
-        /// <summary>
-        /// Enables Cubism-style masking for a material.
-        /// </summary>
-        /// <param name="material">Material to set up.</param>
-        private static void EnableMasking(Material material)
-        {
-            // Set toggle.
-            material.SetInt("cubism_MaskOn", 1);
-
-
-            // Enable keyword.
-            var shaderKeywords = material.shaderKeywords.ToList();
-
-
-            shaderKeywords.RemoveAll(k => k == "CUBISM_MASK_OFF");
-
-
-            if (!shaderKeywords.Contains("CUBISM_MASK_ON"))
-            {
-                shaderKeywords.Add("CUBISM_MASK_ON");
-            }
-
-
-            material.shaderKeywords = shaderKeywords.ToArray();
-        }
-
-
-        /// <summary>
-        /// Generates the builtin resources as necessary.
-        /// </summary>
-        private static void GenerateBuiltinResources()
-        {
-            var resourcesRoot = AssetDatabase
-                .GetAssetPath(CubismBuiltinShaders.Unlit)
-                .Replace("/Shaders/Unlit.shader", "");
-
-
-            // Create materials.
-            if (CubismBuiltinMaterials.Mask == null)
-            {
-                var materialsRoot = resourcesRoot + "/Materials";
-
-
-                // Make sure materials folder exists.
-                if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), materialsRoot)))
-                {
-                    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), materialsRoot));
-                }
-
-
-                // Create mask material.
-                var material = new Material (CubismBuiltinShaders.Mask)
-                {
-                    name = "Mask"
-                };
-
-                        
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                // Create non-masked materials.
-                material = new Material (CubismBuiltinShaders.Unlit)
-                {
-                    name = "Unlit"
-                };
-
-                EnableNormalBlending(material);
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                material = new Material (CubismBuiltinShaders.Unlit)
-                {
-                    name = "UnlitAdditive"
-                };
-
-                EnableAdditiveBlending(material);
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                material = new Material (CubismBuiltinShaders.Unlit)
-                {
-                    name = "UnlitMultiply"
-                };
-
-                EnableMultiplicativeBlending(material);
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                // Create masked materials.
-                material = new Material (CubismBuiltinShaders.Unlit)
-                {
-                    name = "UnlitMasked"
-                };
-
-                EnableNormalBlending(material);
-                EnableMasking(material);
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                material = new Material (CubismBuiltinShaders.Unlit)
-                {
-                    name = "UnlitAdditiveMasked"
-                };
-
-                EnableAdditiveBlending(material);
-                EnableMasking(material);
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                material = new Material (CubismBuiltinShaders.Unlit)
-                {
-                    name = "UnlitMultiplyMasked"
-                };
-
-                EnableMultiplicativeBlending(material);
-                EnableMasking(material);
-                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
-
-
-                EditorUtility.SetDirty(CubismBuiltinShaders.Unlit);
-                AssetDatabase.SaveAssets();
-            }
-
-
-            // Create global mask texture.
-            if (CubismMaskTexture.GlobalMaskTexture == null)
-            {
-                var globalMaskTexture = ScriptableObject.CreateInstance<CubismMaskTexture>();
-
-                globalMaskTexture.name = "GlobalMaskTexture";
-
-
-                AssetDatabase.CreateAsset(globalMaskTexture, string.Format("{0}/{1}.asset", resourcesRoot, globalMaskTexture.name));
             }
         }
 

@@ -17,7 +17,6 @@ using Live2D.Cubism.Framework.Expression;
 using Live2D.Cubism.Framework.MotionFade;
 using Live2D.Cubism.Framework.Raycasting;
 using Live2D.Cubism.Rendering;
-using Live2D.Cubism.Rendering.Masking;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -321,7 +320,6 @@ namespace Live2D.Cubism.Framework.Json
 
             var model = CubismModel.InstantiateFrom(moc);
 
-
             model.name = Path.GetFileNameWithoutExtension(FileReferences.Moc);
 
 
@@ -341,7 +339,7 @@ namespace Live2D.Cubism.Framework.Json
             // Initialize materials.
             for (var i = 0; i < renderers.Length; ++i)
             {
-                renderers[i].Material = pickMaterial(this, drawables[i]);
+                //renderers[i].Material = pickMaterial(this, drawables[i]);
             }
 
 
@@ -402,23 +400,6 @@ namespace Live2D.Cubism.Framework.Json
 
                     parameters[i].gameObject.AddComponent<CubismMouthParameter>();
                 }
-            }
-
-
-            // Add mask controller if required.
-            for (var i = 0; i < drawables.Length; ++i)
-            {
-                if (!drawables[i].IsMasked)
-                {
-                    continue;
-                }
-
-
-                // Add controller exactly once...
-                model.gameObject.AddComponent<CubismMaskController>();
-
-
-                break;
             }
 
             // Add original workflow component if is original workflow.

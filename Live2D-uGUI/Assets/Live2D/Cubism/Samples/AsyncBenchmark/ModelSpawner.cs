@@ -56,31 +56,29 @@ namespace Live2D.Cubism.Samples.AsyncBenchmark
             // Spawn new instance.
             var instance = Instantiate(ModelPrefab);
 
+            var tf = ModelCountUi.transform.parent.parent.GetChild(2);
+            var size = tf.GetComponent<RectTransform>().rect;
 
-            var random = new Random();
-            var offsetX = (float)random.Next(-1000, 1000) / 1000f;
-            var offsetY = (float)random.Next(-1000, 1000) / 1000f;
+            var rt = instance.transform.GetComponent<RectTransform>();
+            rt.SetParent(tf, false);
+            rt.anchorMin = Vector2.up;
+            rt.anchorMax = Vector2.up;
+            rt.sizeDelta = new Vector2(200f, 400f);
+            rt.localScale *= 0.5f;
 
-
-            var screenToWorld = Camera.main.ScreenToWorldPoint(
-                new Vector3(
-                    Screen.width,
-                    Screen.height,
-                    Camera.main.nearClipPlane));
-
-
-            instance.transform.position = new Vector3(
-                screenToWorld.x * offsetX,
-                screenToWorld.y * offsetY,
-                instance.transform.position.z);
-
+            int num = Instances.Count;
+            var num2 = Mathf.FloorToInt(size.width / (rt.sizeDelta.x / 2));
+            var num3 = num / num2;
+            var num4 = num % num2;
+            rt.anchoredPosition = new Vector2(50f + rt.sizeDelta.x / 2 * num4, -100f - rt.sizeDelta.y / 2 * num3);
+            //rt.localScale *= 300f;
 
             // Register instance and update UI.
             Instances.Add(instance);
 
 
             // Make sure to assign a unique sorting order to the instance.
-            instance.GetComponent<CubismRenderController>().SortingOrder = Instances.Count;
+            //instance.GetComponent<CubismRenderController>().SortingOrder = Instances.Count;
 
 
             // Update UI.

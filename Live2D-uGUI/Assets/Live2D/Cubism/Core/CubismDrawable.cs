@@ -29,7 +29,7 @@ namespace Live2D.Cubism.Core
         internal static GameObject CreateDrawables(CubismUnmanagedModel unmanagedModel)
         {
             var root = new GameObject("Drawables");
-
+            root.layer = 5;
 
             // Create drawables.
             var unmanagedDrawables = unmanagedModel.Drawables;
@@ -39,7 +39,7 @@ namespace Live2D.Cubism.Core
             for (var i = 0; i < buffer.Length; ++i)
             {
                 var proxy = new GameObject();
-
+                proxy.layer = 5;
 
                 buffer[i] = proxy.AddComponent<CubismDrawable>();
 
@@ -163,8 +163,8 @@ namespace Live2D.Cubism.Core
                 for (var i = 0; i < buffer.Length; ++i)
                 {
                     buffer[i] = new Vector3(
-                        positions[UnmanagedIndex][(i * 2) + 0],
-                        positions[UnmanagedIndex][(i * 2) + 1]
+                        positions[UnmanagedIndex][(i * 2) + 0] * 300f,
+                        positions[UnmanagedIndex][(i * 2) + 1] * 300f
                     );
                 }
 

@@ -255,8 +255,8 @@ namespace Live2D.Cubism.Core
                 {
                     for (var v = 0; v < data.VertexPositions.Length; ++v)
                     {
-                        dataVertexPositions[v].x = vertexPositions[i][(v * 2) + 0];
-                        dataVertexPositions[v].y = vertexPositions[i][(v * 2) + 1];
+                        dataVertexPositions[v].x = vertexPositions[i][(v * 2) + 0] * 300f;
+                        dataVertexPositions[v].y = vertexPositions[i][(v * 2) + 1] * 300f;
                     }
                 }
             }

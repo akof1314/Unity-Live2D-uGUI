@@ -10,7 +10,7 @@ using Live2D.Cubism.Core;
 using Live2D.Cubism.Framework;
 using System;
 using UnityEngine;
-
+using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 
@@ -19,7 +19,7 @@ namespace Live2D.Cubism.Rendering
     /// <summary>
     /// Controls rendering of a <see cref="CubismModel"/>.
     /// </summary>
-    [ExecuteInEditMode, CubismDontMoveOnReimport]
+    [ExecuteInEditMode, CubismDontMoveOnReimport, RequireComponent(typeof(RectTransform))]
     public sealed class CubismRenderController : MonoBehaviour, ICubismUpdatable
     {
         /// <summary>
@@ -44,59 +44,6 @@ namespace Live2D.Cubism.Rendering
         {
             get { return _lastOpacity; }
             set { _lastOpacity = value; }
-        }
-
-
-        /// <summary>
-        /// Sorting layer name.
-        /// </summary>
-        public string SortingLayer
-        {
-            get
-            {
-                return UnityEngine.SortingLayer.IDToName(SortingLayerId);
-            }
-            set
-            {
-                SortingLayerId = UnityEngine.SortingLayer.NameToID(value);
-            }
-        }
-
-        /// <summary>
-        /// <see cref="SortingLayerId"/> backing field.
-        /// </summary>
-        [SerializeField, HideInInspector]
-        private int _sortingLayerId;
-
-        /// <summary>
-        /// Sorting layer Id.
-        /// </summary>
-        public int SortingLayerId
-        {
-            get
-            {
-                return _sortingLayerId;
-            }
-            set
-            {
-                if (value == _sortingLayerId)
-                {
-                    return;
-                }
-
-
-                _sortingLayerId = value;
-
-
-                // Apply sorting layer.
-                var renderers = Renderers;
-
-
-                for (var i = 0; i < renderers.Length; ++i)
-                {
-                    renderers[i].OnControllerSortingLayerDidChange(_sortingLayerId);
-                }
-            }
         }
 
 
@@ -134,45 +81,6 @@ namespace Live2D.Cubism.Rendering
                 for (var i = 0; i < renderers.Length; ++i)
                 {
                     renderers[i].OnControllerSortingModeDidChange(_sortingMode);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Order in sorting layer.
-        /// </summary>
-        [SerializeField, HideInInspector]
-        private int _sortingOrder;
-
-        /// <summary>
-        /// Order in sorting layer.
-        /// </summary>
-        public int SortingOrder
-        {
-            get
-            {
-                return _sortingOrder;
-            }
-            set
-            {
-                // Return early in case same value given.
-                if (value == _sortingOrder)
-                {
-                    return;
-                }
-
-
-                _sortingOrder = value;
-
-
-                // Apply new sorting order.
-                var renderers = Renderers;
-
-
-                for (var i = 0; i < renderers.Length; ++i)
-                {
-                    renderers[i].OnControllerSortingOrderDidChange(SortingOrder);
                 }
             }
         }
@@ -264,47 +172,7 @@ namespace Live2D.Cubism.Rendering
             }
         }
 
-
-        /// <summary>
-        /// The value to offset the <see cref="CubismDrawable"/>s by.
-        /// </summary>
-        /// <remarks>
-        /// You only need to adjust this value when using perspetive cameras.
-        /// </remarks>
-        [SerializeField, HideInInspector]
-        public float _depthOffset = 0.00001f;
-
-        /// <summary>
-        /// Depth offset used when sorting by depth.
-        /// </summary>
-        public float DepthOffset
-        {
-            get { return _depthOffset; }
-            set
-            {
-                // Return if same value given.
-                if (Mathf.Abs(value - _depthOffset) < Mathf.Epsilon)
-                {
-                    return;
-                }
-
-
-                // Store value.
-                _depthOffset = value;
-
-
-                // Apply it.
-                var renderers = Renderers;
-
-
-                for (var i = 0; i < renderers.Length; ++i)
-                {
-                    renderers[i].OnControllerDepthOffsetDidChange(_depthOffset);
-                }
-            }
-        }
-
-
+        
         /// <summary>
         /// Model the controller belongs to.
         /// </summary>
@@ -399,13 +267,6 @@ namespace Live2D.Cubism.Rendering
             {
                 renderers[i].TryInitialize();
             }
-
-
-            // Initialize sorting layer.
-            // We set the backing field here directly because we pull the sorting layer directly from the renderer.
-            _sortingLayerId = renderers[0]
-                .MeshRenderer
-                .sortingLayerID;
         }
 
 
@@ -603,10 +464,12 @@ namespace Live2D.Cubism.Rendering
                 // Update vertex positions.
                 if (data[i].AreVertexPositionsDirty)
                 {
-                    renderers[i].OnDrawableVertexPositionsDidChange(data[i].VertexPositions);
-
-
-                    swapMeshes = true;
+                    Profiler.BeginSample("OnDrawableVertexPositionsDidChange");
+                    if (renderers[i].OnDrawableVertexPositionsDidChange(data[i].VertexPositions))
+                    {
+                        swapMeshes = true;
+                    }
+                    Profiler.EndSample();
                 }
 
 

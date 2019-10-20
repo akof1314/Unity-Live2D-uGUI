@@ -9,6 +9,7 @@
 using Live2D.Cubism.Framework;
 using System;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 
 namespace Live2D.Cubism.Core
@@ -351,8 +352,9 @@ namespace Live2D.Cubism.Core
                 return;
             }
 
-
+            Profiler.BeginSample("OnDynamicDrawableData");
             OnDynamicDrawableData(this, TaskableModel.DynamicDrawableData);
+            Profiler.EndSample();
         }
 
 

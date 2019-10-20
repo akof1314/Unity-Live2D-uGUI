@@ -129,7 +129,7 @@ namespace Live2D.Cubism.Framework.Raycasting
 
 
                 // Skip inactive raycastables.
-                if (!raycastable.MeshRenderer.enabled)
+                //if (!raycastable.MeshRenderer.enabled)
                 {
                     continue;
                 }

@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Live2D/Cubism/Samples/AsyncBenchmark/AsyncBenchmark.unity
+    guid: 75a9b098cacf60a4dbd2879ed40df13d
   m_configObjects: {}

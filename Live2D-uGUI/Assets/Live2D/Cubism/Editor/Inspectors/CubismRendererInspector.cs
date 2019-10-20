@@ -42,8 +42,7 @@ namespace Live2D.Cubism.Editor.Inspectors
 
             EditorGUI.BeginChangeCheck();
 
-            renderer.Color = EditorGUILayout.ColorField("Color", renderer.Color);
-            renderer.Material = EditorGUILayout.ObjectField("Material", renderer.Material, typeof(Material), true) as Material;
+            renderer.color = EditorGUILayout.ColorField("Color", renderer.color);
             renderer.MainTexture = EditorGUILayout.ObjectField("Main Texture", renderer.MainTexture, typeof(Texture2D), true) as Texture2D;
             renderer.LocalSortingOrder = EditorGUILayout.IntField("Local Order", renderer.LocalSortingOrder);
 
@@ -52,20 +51,6 @@ namespace Live2D.Cubism.Editor.Inspectors
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(renderer);
-                EditorUtility.SetDirty(renderer.MeshFilter);
-                EditorUtility.SetDirty(renderer.MeshRenderer);
-            }
-
-
-            // Show backend toggle.
-            var showBackends = (renderer.MeshRenderer.hideFlags & HideFlags.HideInInspector) != HideFlags.HideInInspector;
-            var toggle = EditorGUILayout.Toggle("Show Mesh Filter & Renderer", showBackends) != showBackends;
-
-
-            if (toggle)
-            {
-                renderer.MeshFilter.hideFlags   ^= HideFlags.HideInInspector;
-                renderer.MeshRenderer.hideFlags ^= HideFlags.HideInInspector;
             }
         }
 
